@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,7 +23,7 @@ import {MovieRepository} from '../repositories';
 export class MovieController {
   constructor(
     @repository(MovieRepository)
-    public movieRepository : MovieRepository,
+    public movieRepository: MovieRepository,
   ) {}
 
   @post('/movies')
@@ -52,9 +52,7 @@ export class MovieController {
     description: 'Movie model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Movie) where?: Where<Movie>,
-  ): Promise<Count> {
+  async count(@param.where(Movie) where?: Where<Movie>): Promise<Count> {
     return this.movieRepository.count(where);
   }
 
@@ -70,10 +68,8 @@ export class MovieController {
       },
     },
   })
-  async find(
-    @param.filter(Movie) filter?: Filter<Movie>,
-  ): Promise<Movie[]> {
-    return this.movieRepository.find(filter);
+  async find(@param.filter(Movie) filter?: Filter<Movie>): Promise<Movie[]> {
+    return this.movieRepository.find({include: ['actors', 'reviews']});
   }
 
   @patch('/movies')
@@ -106,7 +102,8 @@ export class MovieController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Movie, {exclude: 'where'}) filter?: FilterExcludingWhere<Movie>
+    @param.filter(Movie, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Movie>,
   ): Promise<Movie> {
     return this.movieRepository.findById(id, filter);
   }
